@@ -4,7 +4,17 @@ import { Genre } from "./GenreEnum";
 import { ValidationException } from "./ValidationException";
 
 export class Validator {
-  static validateBook(book: Book): void {}
+  static validateBook(book: Book): void {
+    let errors = [
+      Validator._getTitleFieldError(book.title),
+      Validator._getAuthorFieldError(book.author),
+      Validator._getGenreFieldError(book.genre),
+      Validator._getPublishedYearError(book.publishedYear),
+    ].filter((error): error is FieldError => error !== null);
+    if (errors.length > 0) {
+      throw new ValidationException(errors);
+    }
+  }
 
   static validateTitle(title: string): void {
     let error = Validator._getTitleFieldError(title);
@@ -35,42 +45,71 @@ export class Validator {
   }
 
   private static _getTitleFieldError(title: string): FieldError | null {
-    if (title.length < 3) {
-      return new FieldError(
-        "title",
-        "Should be at least 3 characters in length"
-      );
+    let errorMsg = "";
+    if (typeof title !== "string") {
+      errorMsg = "Should be of string type";
+    } else if (title.length < 3) {
+      errorMsg = "Should be at least 3 characters in length";
+    }
+
+    if (errorMsg) {
+      return new FieldError("title", errorMsg);
     }
     return null;
   }
 
   private static _getAuthorFieldError(author?: string): FieldError | null {
-    if (typeof author !== "string") {
-      // do nothing as author can be null
+    let errorMsg = "";
+    if (typeof author === undefined) {
+      // do nothing
+    } else if (typeof author !== "string") {
+      errorMsg = "Should be of string type";
     } else {
       if (author.length < 3) {
-        return new FieldError(
-          "author",
-          "Should be at least 3 characters in length"
-        );
+        errorMsg = "Should be at least 3 characters in length";
       }
+    }
+    if (errorMsg) {
+      return new FieldError("author", errorMsg);
     }
     return null;
   }
 
-  private static _getGenreFieldError(genere: Genre[]): FieldError | null {
+  private static _getGenreFieldError(genre: Genre[]): FieldError | null {
+    let errorMsg = "";
+    if (typeof genre === "undefined") {
+      //do nothing
+    } else if (!Array.isArray(genre)) {
+      errorMsg = "Should be of array type";
+    } else {
+      for (const genreItem of genre) {
+        if (!Object.values(Genre).includes(genreItem)) {
+          errorMsg += `${genreItem} is not a valid genre \n`;
+        }
+      }
+    }
+
+    if (errorMsg) {
+      return new FieldError("genre", errorMsg);
+    }
     return null;
   }
 
   private static _getPublishedYearError(
-    publishedYear: number
+    publishedYear: number | undefined
   ): FieldError | null {
     let currentYear = new Date().getFullYear();
-    if (publishedYear > currentYear) {
-      return new FieldError(
-        "publishedYear",
-        "publishedYear cannot be greater than currentYear"
-      );
+    let errorMsg = "";
+    if (typeof publishedYear === "undefined") {
+      //do nothing
+    } else if (typeof publishedYear !== "number") {
+      errorMsg = "Should be of type number";
+    } else if (publishedYear > currentYear) {
+      errorMsg = "publishedYear cannot be greater than currentYear";
+    }
+
+    if (errorMsg) {
+      return new FieldError("publishedYear", errorMsg);
     }
     return null;
   }

@@ -12,19 +12,26 @@ export class Book {
   private _title: string;
   private _author?: string;
   private _genre: Genre[];
-  private _publishedYear: number;
+  private _publishedYear: number | undefined;
 
-  constructor(
-    title: string,
-    author?: string,
-    genre?: Genre[],
-    publishedYear?: number
-  ) {
-    this._id = nanoid<BookId>();
+  constructor({
+    id,
+    title,
+    author,
+    genre,
+    publishedYear,
+  }: {
+    id: BookId;
+    title: string;
+    author?: string;
+    genre?: Genre[];
+    publishedYear?: number;
+  }) {
+    this._id = id ? id : nanoid<BookId>();
     this._title = title;
     this._author = author;
     this._genre = genre ? genre : [];
-    this._publishedYear = publishedYear ? publishedYear : Number.MIN_VALUE;
+    this._publishedYear = publishedYear;
     Validator.validateBook(this);
   }
 
@@ -45,6 +52,14 @@ export class Book {
   }
 
   /**
+   * Getter author
+   * @return {string}
+   */
+  public get author(): string | undefined {
+    return this._author;
+  }
+
+  /**
    * Getter genre
    * @return {Genre[]}
    */
@@ -56,7 +71,7 @@ export class Book {
    * Getter publishedYear
    * @return {number}
    */
-  public get publishedYear(): number {
+  public get publishedYear(): number | undefined {
     return this._publishedYear;
   }
 
@@ -85,5 +100,15 @@ export class Book {
   public set publishedYear(value: number) {
     Validator.validatePublishedYear(value);
     this._publishedYear = value;
+  }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      title: this._title,
+      author: this._author,
+      genre: this.genre,
+      publishedYear: this.publishedYear,
+    };
   }
 }

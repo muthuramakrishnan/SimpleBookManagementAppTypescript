@@ -1,8 +1,17 @@
 [
   {
-    "title": "Data Structures"
+    "id": "C4OVyW84DxfiLK6SClEpT",
+    "title": "Headfirst Java",
+    "author": "I don't know who the author is",
+    "genre": [
+      "Fiction"
+    ],
+    "publishedYear": 2000
   },
   {
-    "title": "Python"
+    "id": "LayR3hBaIxrOdWQ_Axwd8",
+    "title": "Data Structures",
+    "author": "Bjarne Storustroup",
+    "genre": []
   }
 ]

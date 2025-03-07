@@ -22,4 +22,11 @@ export class FieldError {
   public get message(): string {
     return this._message;
   }
+
+  public toJSON() {
+    return {
+      field: this._field,
+      message: this.message,
+    };
+  }
 }
